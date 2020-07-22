@@ -1,18 +1,25 @@
+Version 2.0.0
+- Upgrade: Support for Deluge 2.0, Python 3 and Gtk 3
+- Feature: Fully functional GTK 3 user interface
+- Feature: Changed time values from days to hours
+- Feature: Removing by torrent size. (largest torrent first)
+- Bug fix: Remove torrents only until it reaches the needed free space (one by one).
+
 Version 0.6.2
-- Bugfix: Save properly minimum values of specific remove rules in WebUI.
+- Bug fix: Save properly minimum values of specific remove rules in WebUI.
 
 Version 0.6.1
-- Bugfix: Fixed error loading settings on certain WebUI configurations.
+- Bug fix: Fixed error loading settings on certain WebUI configurations.
 
 Version 0.6
 - Feature: Specific settings for trackers and labels.
 - Feature: Remove only torrents from specific trackers or labels.
 - Feature: Usability improvements.
-- Bugfix: Correctly check in WebUI if saving preferences is necessary.
-- Bugfix: Removal of torrents in order even when they are going to be deleted.
+- Bug fix: Correctly check in WebUI if saving preferences is necessary.
+- Bug fix: Removal of torrents in order even when they are going to be deleted.
 
 Version 0.5.1
-- Bugfix: No label error fixed.
+- Bug fix: No label error fixed.
 
 Version 0.5
 - Feature: Exclude torrents based on labels.
@@ -31,7 +38,7 @@ Version 0.3
 Version 0.2
 - Feature: Fully functional WebUI
 - Feature: Exempted tracker list
-- Bugfix: Exempted torrent toggle not showing correct value on first time
+- Bug fix: Exempted torrent toggle not showing correct value on first time
 
 Version 0.1.1
 - Feature: Remove torrent data option

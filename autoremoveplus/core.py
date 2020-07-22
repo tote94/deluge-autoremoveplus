@@ -1,7 +1,9 @@
 #
 # core.py
 #
+# Copyright (C) 2020 Ervin Toth <tote.ervin@gmail.com>
 # Copyright (C) 2014-2016 Omar Alvarez <osurfer3@hotmail.com>
+# Copyright (C) 2013 Sven Klomp <mail@klomp.eu>
 # Copyright (C) 2011 Jamie Lennox <jamielennox@gmail.com>
 #
 # Basic plugin template created by:
@@ -22,21 +24,24 @@
 # See the GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with deluge.    If not, write to:
+# along with deluge. If not, write to:
 # 	The Free Software Foundation, Inc.,
 # 	51 Franklin Street, Fifth Floor
 # 	Boston, MA  02110-1301, USA.
 #
-#    In addition, as a special exception, the copyright holders give
-#    permission to link the code of portions of this program with the OpenSSL
-#    library.
-#    You must obey the GNU General Public License in all respects for all of
-#    the code used other than OpenSSL. If you modify file(s) with this
-#    exception, you may extend this exception to your version of the file(s),
-#    but you are not obligated to do so. If you do not wish to do so, delete
-#    this exception statement from your version. If you delete this exception
-#    statement from all source files in the program, then also delete it here.
+# In addition, as a special exception, the copyright holders give
+# permission to link the code of portions of this program with the OpenSSL
+# library.
 #
+# You must obey the GNU General Public License in all respects for all of
+# the code used other than OpenSSL. If you modify file(s) with this
+# exception, you may extend this exception to your version of the file(s),
+# but you are not obligated to do so. If you do not wish to do so, delete
+# this exception statement from your version. If you delete this exception
+# statement from all source files in the program, then also delete it here.
+#
+
+from __future__ import unicode_literals
 
 from deluge.log import LOG as log
 from deluge.plugins.pluginbase import CorePluginBase
@@ -51,46 +56,46 @@ import time
 
 DEFAULT_PREFS = {
     'max_seeds': 0,
-    'filter': 'func_ratio',
+    'filter': 'func_seed_time',
     'count_exempt': False,
-    'remove_data': False,
+    'remove_data': True,
     'trackers': [],
     'labels': [],
     'min': 0.0,
-    'interval': 0.5,
+    'interval': 1.0,
     'sel_func': 'and',
-    'filter2': 'func_added',
+    'filter2': 'func_ratio',
     'min2': 0.0,
-    'hdd_space': -1.0,
+    'hdd_space': 10.0,
     'remove': True,
     'enabled': False,
     'tracker_rules': {},
     'label_rules': {},
     'rule_1_enabled': True,
-    'rule_2_enabled': True
+    'rule_2_enabled': False
 }
 
 
-def _get_ratio((i, t)):
-    return t.get_ratio()
+def _get_ratio(i_t):
+    return i_t[1].get_ratio()
 
 
-def _date_added((i, t)):
-    return (time.time() - t.time_added) / 86400.0
+def _date_added(i_t):
+    return (time.time() - i_t[1].get_status(['time_added'])['time_added']) / 3600.0
 
 
 # Add key label also to get_remove_rules():141
 filter_funcs = {
     'func_ratio': _get_ratio,
-    'func_added': lambda (i, t): (time.time() - t.time_added) / 86400.0,
-    'func_seed_time': lambda (i, t):
-        t.get_status(['seeding_time'])['seeding_time'] / 86400.0,
-    'func_seeders': lambda (i, t): t.get_status(['total_seeds'])['total_seeds']
+    'func_added': lambda i_t: (time.time() - i_t[1].get_status(['time_added'])['time_added']) / 3600.0,
+    'func_seed_time': lambda i_t: i_t[1].get_status(['seeding_time'])['seeding_time'] / 3600.0,
+    'func_seeders': lambda i_t: i_t[1].get_status(['total_seeds'])['total_seeds'],
+    'func_size': lambda i_t: i_t[1].get_status(['total_size'])['total_size'] / 1073741824.0
 }
 
 sel_funcs = {
-    'and': lambda (a, b): a and b,
-    'or': lambda (a, b): a or b
+    'and': lambda a_b: a_b[0] and a_b[1],
+    'or': lambda a_b: a_b[0] or a_b[1]
 }
 
 
@@ -129,17 +134,17 @@ class Core(CorePluginBase):
 
     def start_looping(self):
         log.warning('check interval loop starting')
-        self.looping_call.start(self.config['interval'] * 86400.0)
+        self.looping_call.start(self.config['interval'] * 3600.0)
 
     @export
     def set_config(self, config):
         """Sets the config dictionary"""
-        for key in config.keys():
+        for key in list(config.keys()):
             self.config[key] = config[key]
         self.config.save()
         if self.looping_call.running:
             self.looping_call.stop()
-        self.looping_call.start(self.config['interval'] * 86400.0)
+        self.looping_call.start(self.config['interval'] * 3600.0)
 
     @export
     def get_config(self):
@@ -149,6 +154,7 @@ class Core(CorePluginBase):
     @export
     def get_remove_rules(self):
         return {
+            'func_size': 'Size',
             'func_ratio': 'Ratio',
             'func_added': 'Date Added',
             'func_seed_time': 'Seed Time',
@@ -177,26 +183,16 @@ class Core(CorePluginBase):
 
         self.torrent_states.save()
 
-    def check_min_space(self):
+    def check_needed_space(self):
         min_hdd_space = self.config['hdd_space']
         real_hdd_space = component.get("Core").get_free_space() / 1073741824.0
-
-        log.debug("Space: %s/%s" % (real_hdd_space, min_hdd_space))
-
-        # if deactivated delete torrents
-        if min_hdd_space < 0.0:
-            return False
-
-        # if hdd space below minimum delete torrents
-        if real_hdd_space > min_hdd_space:
-            return True  # there is enough space
-        else:
-            return False
+        
+        return min_hdd_space - real_hdd_space
 
     def pause_torrent(self, torrent):
         try:
             torrent.pause()
-        except Exception, e:
+        except Exception as e:
             log.warn(
                 "AutoRemovePlus: Problems pausing torrent: %s", e
             )
@@ -204,7 +200,7 @@ class Core(CorePluginBase):
     def remove_torrent(self, torrentmanager, tid, remove_data):
         try:
             torrentmanager.remove(tid, remove_data=remove_data)
-        except Exception, e:
+        except Exception as e:
             log.warn(
                 "AutoRemovePlus: Problems removing torrent: %s", e
             )
@@ -220,7 +216,7 @@ class Core(CorePluginBase):
         total_rules = []
 
         for t in torrent.trackers:
-            for name, rules in tracker_rules.iteritems():
+            for name, rules in tracker_rules.items():
                 if(t['url'].find(name.lower()) != -1):
                     for rule in rules:
                         total_rules.append(rule)
@@ -377,25 +373,32 @@ class Core(CorePluginBase):
         )
 
         changed = False
+        
+        min_space = self.config['hdd_space']
+        needed_space = self.check_needed_space()
 
         # remove or pause these torrents
         for i, t in reversed(torrents[max_seeds:]):
+            name = t.get_status(['name'])['name']
+            size = t.get_status(['total_size'])['total_size'] / 1073741824.0
+            
+            log.debug("Needed space: %s" % (needed_space))
+            log.debug("Now processing name = {}, type = {}".format(name,type(name)))
+            log.debug("Size: %s" % (size))
+            
+            if enabled and (min_space < 0.0 or needed_space > 0.0):
+                
+                log.debug(
+                    "AutoRemovePlus: Remove torrent %s, %s"
+                    % (i, t.get_status(['name'])['name'])
+                )
+                log.debug(
+                    filter_funcs.get(self.config['filter'], _get_ratio)((i, t))
+                )
+                log.debug(
+                    filter_funcs.get(self.config['filter2'], _get_ratio)((i, t))
+                )
 
-            # check if free disk space below minimum
-            if self.check_min_space():
-                break  # break the loop, we have enough space
-
-            log.debug(
-                "AutoRemovePlus: Remove torrent %s, %s"
-                % (i, t.get_status(['name'])['name'])
-            )
-            log.debug(
-                filter_funcs.get(self.config['filter'], _get_ratio)((i, t))
-            )
-            log.debug(
-                filter_funcs.get(self.config['filter2'], _get_ratio)((i, t))
-            )
-            if enabled:
                 # Get result of first condition test
                 filter_1 = filter_funcs.get(
                     self.config['filter'],
@@ -442,6 +445,8 @@ class Core(CorePluginBase):
                     if not remove:
                         self.pause_torrent(t)
                     else:
+                        if remove_data:
+                            needed_space -= size
                         if self.remove_torrent(torrentmanager, i, remove_data):
                             changed = True
 

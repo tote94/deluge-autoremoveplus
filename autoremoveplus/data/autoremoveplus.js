@@ -1,8 +1,9 @@
 /*
 Script: autoremoveplus.js
-    The client-side javascript code for the AutoRemove plugin.
+    The client-side javascript code for the AutoRemovePlus plugin.
 
 Copyright:
+    (C) 2020 Ervin Toth <tote.ervin@gmail.com>
     (C) 2014-2016 Omar Alvarez <osurfer3@hotmail.com>
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -206,13 +207,13 @@ Deluge.plugins.autoremoveplus.ui.PreferencePage = Ext.extend(Ext.TabPanel, {
             items: [{
                 xtype: 'label',
                 margins: '5 5 0 0',
-                text: _('Check every: ')
+                text: _('Check interval: ')
             },{
                 xtype: 'spinnerfield',
                 //anchor: '20%',
                 //margins: '0 0 0 0',
                 name: 'checkInterval',
-                fieldLabel: _('Check every'),
+                fieldLabel: _('Check interval'),
                 value: 1.0,
                 maxValue: 1000.0,
                 minValue: 0.0001,
@@ -231,13 +232,13 @@ Deluge.plugins.autoremoveplus.ui.PreferencePage = Ext.extend(Ext.TabPanel, {
             items: [{
                 xtype: 'label',
                 margins: '5 5 0 0',
-                text: _('Max. Torrents: ')
+                text: _('Max. torrents: ')
             },{
                 xtype: 'spinnerfield',
                 //anchor: '20%',
                 //margins: '0 0 0 0',
                 name: 'maxseedtorrents',
-                fieldLabel: _('Maximum Torrents'),
+                fieldLabel: _('Max. torrents'),
                 value: 0,
                 maxValue: 9999,
                 minValue: 0,
@@ -252,11 +253,11 @@ Deluge.plugins.autoremoveplus.ui.PreferencePage = Ext.extend(Ext.TabPanel, {
             items: [{
                 xtype: 'label',
                 margins: '5 5 0 0',
-                text: _('Min. HDD Space: ')
+                text: _('Min. free space: ')
             },{
                 xtype: 'spinnerfield',
                 name: 'minHDDSpace',
-                fieldLabel: _('Min. HDD Space'),
+                fieldLabel: _('Min. free space'),
                 value: -1.0,
                 maxValue: 10000.0,
                 minValue: -1.0,

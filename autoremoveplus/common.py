@@ -1,7 +1,9 @@
 #
 # common.py
 #
+# Copyright (C) 2020 Ervin Toth <tote.ervin@gmail.com>
 # Copyright (C) 2014-2016 Omar Alvarez <osurfer3@hotmail.com>
+# Copyright (C) 2013 Sven Klomp <mail@klomp.eu>
 # Copyright (C) 2011 Jamie Lennox <jamielennox@gmail.com>
 #
 # Basic plugin template created by:
@@ -22,21 +24,24 @@
 # See the GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with deluge.    If not, write to:
+# along with deluge. If not, write to:
 # 	The Free Software Foundation, Inc.,
 # 	51 Franklin Street, Fifth Floor
 # 	Boston, MA  02110-1301, USA.
 #
-#    In addition, as a special exception, the copyright holders give
-#    permission to link the code of portions of this program with the OpenSSL
-#    library.
-#    You must obey the GNU General Public License in all respects for all of
-#    the code used other than OpenSSL. If you modify file(s) with this
-#    exception, you may extend this exception to your version of the file(s),
-#    but you are not obligated to do so. If you do not wish to do so, delete
-#    this exception statement from your version. If you delete this exception
-#    statement from all source files in the program, then also delete it here.
+# In addition, as a special exception, the copyright holders give
+# permission to link the code of portions of this program with the OpenSSL
+# library.
 #
+# You must obey the GNU General Public License in all respects for all of
+# the code used other than OpenSSL. If you modify file(s) with this
+# exception, you may extend this exception to your version of the file(s),
+# but you are not obligated to do so. If you do not wish to do so, delete
+# this exception statement from your version. If you delete this exception
+# statement from all source files in the program, then also delete it here.
+#
+
+from __future__ import unicode_literals
 
 def get_resource(filename):
     import pkg_resources, os
