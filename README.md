@@ -49,13 +49,13 @@ Only remove torrents when the main HDD has less than 10 GB free:
 
 > Min. free space: 10
 
-Remove torrents that have a ratio over 2.0 and have been seeding for at least 4 days:
+Remove torrents that have a ratio over 2.0 and have been seeding for at least 4 days (96 hours):
 
-> Remove by: Ratio, Min: 2.0, and, Remove by: Seed Time, Min: 4  
+> Remove by: Ratio, Min: 2.0, and, Remove by: Seed Time, Min: 96  
 
-Remove torrents that have a ratio over 2.0 or have been seeding for at least 4 days:
+Remove torrents that have a ratio over 2.0 or have been seeding for at least 4 days (96 hours):
 
-> Remove by: Ratio, Min: 2.0, or, Remove by: Seed Time, Min: 4
+> Remove by: Ratio, Min: 2.0, or, Remove by: Seed Time, Min: 96
 
 Pause torrents instead of removing them:
 
