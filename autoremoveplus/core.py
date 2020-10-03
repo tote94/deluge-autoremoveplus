@@ -271,6 +271,7 @@ class Core(CorePluginBase):
 
         # Negative max means unlimited seeds are allowed, so don't do anything
         if max_seeds < 0:
+            log.info("AutoRemovePlus: No actions performed due to max_seeds < 0")
             return
 
         torrentmanager = component.get("TorrentManager")
@@ -281,6 +282,7 @@ class Core(CorePluginBase):
         # If there are less torrents present than we allow
         # then there can be nothing to do
         if len(torrent_ids) <= max_seeds:
+            log.info("AutoRemovePlus: No actions performed due to # torrents < max_seeds")
             return
 
         torrents = []
@@ -348,6 +350,7 @@ class Core(CorePluginBase):
         # check again to make sure we still need to proceed
         if len(torrents) +\
                 (len(ignored_torrents) if count_exempt else 0) <= max_seeds:
+            log.info("AutoRemovePlus: No actions performed due to # non-exempt torrents < max_seeds")
             return
 
         # if we are counting ignored torrents towards our maximum
