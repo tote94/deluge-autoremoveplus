@@ -43,7 +43,8 @@
 
 from __future__ import unicode_literals
 
-from deluge.log import LOG as log
+import logging
+log = logging.getLogger(__name__)
 from deluge.plugins.pluginbase import CorePluginBase
 import deluge.component as component
 import deluge.configmanager
